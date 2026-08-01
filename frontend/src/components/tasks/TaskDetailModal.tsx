@@ -7,7 +7,7 @@ import { setSelectedTaskId } from '../../store/uiSlice';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { TaskLog, TaskStatus } from '../../types';
-import { X, History, Clock, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { X, History, Clock, CheckCircle2, AlertTriangle, Loader2, RefreshCcw } from 'lucide-react';
 
 export const TaskDetailModal = () => {
   const dispatch = useDispatch();
@@ -31,7 +31,7 @@ export const TaskDetailModal = () => {
       case TaskStatus.FAILED:
         return <AlertTriangle className="h-4 w-4 text-rose-400" />;
       case TaskStatus.PROCESSING:
-        return <Loader2 className="h-4 w-4 text-purple-400 animate-spin" />;
+        return <RefreshCcw className="h-4 w-4 text-purple-400" />;
       default:
         return <Clock className="h-4 w-4 text-amber-400" />;
     }

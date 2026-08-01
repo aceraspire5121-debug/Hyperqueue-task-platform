@@ -26,7 +26,7 @@ export default function RegisterPage() {
     setErrorMsg('');
 
     try {
-      const res = await api.post('/auth/register', { name, email, password, role });
+      const res = await api.post('/auth/register', { name, email, password, role: UserRole.USER });
       if (res.data.success) {
         const { user, tokens } = res.data.data;
         dispatch(
@@ -39,7 +39,14 @@ export default function RegisterPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || 'Registration failed. Try again.');
+      const apiErr = err.response?.data;
+      if (apiErr?.errors && Array.isArray(apiErr.errors)) {
+        setErrorMsg(apiErr.errors.map((e: any) => e.message).join('. '));
+      } else if (apiErr?.message) {
+        setErrorMsg(apiErr.message);
+      } else {
+        setErrorMsg('Registration failed. Please check your inputs and try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +88,10 @@ export default function RegisterPage() {
                 required
                 placeholder="Alex Developer"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
                 className="w-full rounded-lg bg-slate-950 border border-slate-800 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
@@ -98,7 +108,10 @@ export default function RegisterPage() {
                 required
                 placeholder="developer@saarthi.ai"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
                 className="w-full rounded-lg bg-slate-950 border border-slate-800 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
@@ -115,24 +128,13 @@ export default function RegisterPage() {
                 required
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
                 className="w-full rounded-lg bg-slate-950 border border-slate-800 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Account Role
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full rounded-lg bg-slate-950 border border-slate-800 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none"
-            >
-              <option value={UserRole.USER}>USER (Developer)</option>
-              <option value={UserRole.ADMIN}>ADMIN (System Supervisor)</option>
-            </select>
           </div>
 
           <button
