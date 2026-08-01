@@ -112,7 +112,7 @@ export class TaskRepository implements ITaskRepository {
   }
 
   async getLogs(taskId: string): Promise<ITaskLog[]> {
-    return TaskLog.find({ taskId: new mongoose.Types.ObjectId(taskId) }).sort({ createdAt: -1 });
+    return TaskLog.find({ taskId: new mongoose.Types.ObjectId(taskId) }).sort({ createdAt: 1 });
   }
 
   async getMetrics(userId?: string): Promise<TaskMetrics> {

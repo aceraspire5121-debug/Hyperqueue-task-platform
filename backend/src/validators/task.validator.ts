@@ -7,7 +7,18 @@ export const createTaskSchema = z.object({
   priority: z.nativeEnum(TaskPriority).optional().default(TaskPriority.MEDIUM),
   scheduledAt: z.string().datetime().optional().nullable(),
   maxRetries: z.number().int().min(0).max(10).optional().default(3),
-  payload: z.record(z.any()).optional(),
+  payload: z
+    .preprocess((val) => {
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return {};
+        }
+      }
+      return val;
+    }, z.record(z.any()))
+    .optional(),
 });
 
 export const updateTaskSchema = z.object({

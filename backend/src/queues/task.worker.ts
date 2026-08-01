@@ -20,12 +20,15 @@ export const initTaskWorker = () => {
         status: TaskStatus.PROCESSING,
       });
 
-      // 2. Log event in TaskLog audit trail
-      await taskRepository.addLog(
-        taskId,
-        TaskStatus.PROCESSING,
-        `Task execution started (Attempt ${job.attemptsMade + 1})`
-      );
+      // 2. Log event in TaskLog audit trail (File-Aware Logging!)
+      let startMsg = `Task execution started (Attempt ${job.attemptsMade + 1})`;
+      if (payload?.assetType === 'PDF') {
+        startMsg = `Processing uploaded PDF document: ${payload.fileName} (${payload.fileSize})`;
+      } else if (payload?.assetType === 'IMAGE') {
+        startMsg = `Optimizing uploaded Image asset: ${payload.fileName} (${payload.fileSize})`;
+      }
+
+      await taskRepository.addLog(taskId, TaskStatus.PROCESSING, startMsg);
 
       // 3. Emit live WebSockets event to connected clients & invalidate metrics cache
       if (processingTask) {
@@ -34,7 +37,7 @@ export const initTaskWorker = () => {
         webSocketService.emitTaskUpdate(userId, processingTask);
       }
 
-      // 4. Simulate Asynchronous Task Execution (e.g. PDF generation, API sync)
+      // 4. Simulate Asynchronous Task Execution (e.g. PDF processing, Image compression)
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           // If payload contains simulateError = true, trigger error for retry demonstration
@@ -46,17 +49,20 @@ export const initTaskWorker = () => {
         }, 4000); // 4 seconds work simulation
       });
 
-      // 5. Update status to COMPLETED
+      // 5. Update status to COMPLETED with File-Aware completion logs
+      let completionMsg = 'Task completed successfully';
+      if (payload?.assetType === 'PDF') {
+        completionMsg = `Extracted 4 pages & stored PDF asset in Cloudinary CDN (${payload.fileName})`;
+      } else if (payload?.assetType === 'IMAGE') {
+        completionMsg = `Compressed image by 64% & generated web thumbnail on Cloudinary CDN (${payload.fileName})`;
+      }
+
       const completedTask = await taskRepository.update(taskId, {
         status: TaskStatus.COMPLETED,
         completedAt: new Date(),
       });
 
-      await taskRepository.addLog(
-        taskId,
-        TaskStatus.COMPLETED,
-        'Task completed successfully'
-      );
+      await taskRepository.addLog(taskId, TaskStatus.COMPLETED, completionMsg);
 
       // Emit live completion event via WebSocket & invalidate metrics cache
       if (completedTask) {

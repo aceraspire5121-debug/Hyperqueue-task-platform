@@ -7,7 +7,7 @@ import { setSelectedTaskId } from '../../store/uiSlice';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { TaskLog, TaskStatus } from '../../types';
-import { X, History, Clock, CheckCircle2, AlertTriangle, Loader2, RefreshCcw } from 'lucide-react';
+import { X, History, Clock, CheckCircle2, AlertTriangle, Loader2, RefreshCcw, ExternalLink, Paperclip, FileText } from 'lucide-react';
 
 export const TaskDetailModal = () => {
   const dispatch = useDispatch();
@@ -21,6 +21,18 @@ export const TaskDetailModal = () => {
     },
     enabled: !!selectedTaskId,
   });
+
+  // Lock background body scroll when modal is open
+  React.useEffect(() => {
+    if (selectedTaskId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedTaskId]);
 
   if (!selectedTaskId) return null;
 

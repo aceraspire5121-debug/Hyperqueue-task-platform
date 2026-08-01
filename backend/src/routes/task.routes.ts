@@ -3,13 +3,14 @@ import { TaskController } from '../controllers/task.controller';
 import { authenticateJWT } from '../middlewares/auth.middleware';
 import { validateRequest } from '../middlewares/validate.middleware';
 import { createTaskSchema, updateTaskSchema } from '../validators/task.validator';
+import { uploadMiddleware } from '../middlewares/upload.middleware';
 
 const router = Router();
 const taskController = new TaskController();
 
 router.use(authenticateJWT);
 
-router.post('/', validateRequest(createTaskSchema), taskController.createTask);
+router.post('/', uploadMiddleware.single('file'), validateRequest(createTaskSchema), taskController.createTask);
 router.get('/', taskController.getTasks);
 router.get('/metrics', taskController.getDashboardMetrics);
 router.get('/:id', taskController.getTaskById);

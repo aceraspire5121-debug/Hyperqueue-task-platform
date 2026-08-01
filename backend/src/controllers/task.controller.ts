@@ -2,13 +2,42 @@ import { Request, Response, NextFunction } from 'express';
 import { TaskService } from '../services/task.service';
 import { ApiResponse } from '../utils/apiResponse';
 import { TaskStatus, TaskPriority } from '../models/Task';
+import { cloudinaryService } from '../services/cloudinary.service';
 
 const taskService = new TaskService();
 
 export class TaskController {
   async createTask(req: Request, res: Response, next: NextFunction) {
     try {
-      const task = await taskService.createTask(req.user!.userId, req.body);
+      let bodyData = { ...req.body };
+      
+      // Parse body payload if sent as stringified JSON in multipart/form-data
+      if (typeof bodyData.payload === 'string') {
+        try {
+          bodyData.payload = JSON.parse(bodyData.payload);
+        } catch (e) {
+          bodyData.payload = {};
+        }
+      }
+
+      let payloadObj = bodyData.payload || {};
+
+      // ☁️ REAL CLOUDINARY UPLOAD PIPELINE: Upload raw File Buffer to user's Cloudinary CDN!
+      if (req.file) {
+        const uploaded = await cloudinaryService.uploadBuffer(req.file.buffer, req.file.originalname);
+        
+        payloadObj = {
+          ...payloadObj,
+          assetType: req.file.mimetype === 'application/pdf' ? 'PDF' : 'IMAGE',
+          fileName: req.file.originalname,
+          fileSize: `${(req.file.size / 1024).toFixed(1)} KB`,
+          fileUrl: uploaded.url, // 👈 REAL CLOUDINARY HTTPS CDN URL!
+        };
+      }
+
+      bodyData.payload = payloadObj;
+
+      const task = await taskService.createTask(req.user!.userId, bodyData);
       return ApiResponse.success(res, 'Task created and queued successfully', task, 201);
     } catch (error) {
       next(error);
