@@ -65,7 +65,7 @@ export default function RegisterPage() {
             Create Developer Account
           </h2>
           <p className="mt-1 text-xs text-slate-400">
-            Join SaarthiFlow Task Automation Platform
+            Join HyperQueue Engine Task Automation Platform
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 required
-                placeholder="developer@saarthi.ai"
+                placeholder="developer@hyperqueue.io"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);

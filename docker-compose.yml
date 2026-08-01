@@ -4,50 +4,50 @@ services:
   # 1. MongoDB Database
   mongodb:
     image: mongo:latest
-    container_name: saarthi_mongodb
+    container_name: hyperqueue_mongodb
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=saarthi_task_db
+      - MONGO_INITDB_DATABASE=hyperqueue_task_db
     volumes:
       - mongo_data:/data/db
     networks:
-      - saarthi_net
+      - hyperqueue_net
 
   # 2. Redis Server (BullMQ Queue & Session Cache)
   redis:
     image: redis:alpine
-    container_name: saarthi_redis
+    container_name: hyperqueue_redis
     ports:
       - "6379:6379"
     networks:
-      - saarthi_net
+      - hyperqueue_net
 
   # 3. Node.js Backend API Server
   backend:
     build:
       context: ./backend
       dockerfile: ../docker/Dockerfile.backend
-    container_name: saarthi_backend_api
+    container_name: hyperqueue_backend_api
     ports:
       - "5000:5000"
     environment:
       - PORT=5000
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongodb:27017/saarthi_task_db
+      - MONGODB_URI=mongodb://mongodb:27017/hyperqueue_task_db
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - JWT_ACCESS_SECRET=saarthi_super_secret_access_key_2026
-      - JWT_REFRESH_SECRET=saarthi_super_secret_refresh_key_2026
+      - JWT_ACCESS_SECRET=hyperqueue_super_secret_access_key_2026
+      - JWT_REFRESH_SECRET=hyperqueue_super_secret_refresh_key_2026
     depends_on:
       - mongodb
       - redis
     networks:
-      - saarthi_net
+      - hyperqueue_net
 
 volumes:
   mongo_data:
 
 networks:
-  saarthi_net:
+  hyperqueue_net:
     driver: bridge

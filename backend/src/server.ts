@@ -19,7 +19,7 @@ const startServer = async () => {
   const worker = initTaskWorker();
 
   server.listen(config.port, () => {
-    logger.info(`🚀 Saarthi Task Backend Server running on port ${config.port} in [${config.nodeEnv}] mode`);
+    logger.info(`🚀 HyperQueue Task Backend Server running on port ${config.port} in [${config.nodeEnv}] mode`);
   });
 
   // Graceful Shutdown Handling

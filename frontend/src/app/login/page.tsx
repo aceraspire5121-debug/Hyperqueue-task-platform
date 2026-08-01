@@ -50,12 +50,12 @@ export default function LoginPage() {
   };
 
   const quickFillUser = () => {
-    setEmail('user@saarthi.ai');
+    setEmail('user@hyperqueue.io');
     setPassword('UserPassword123!');
   };
 
   const quickFillAdmin = () => {
-    setEmail('admin@saarthi.ai');
+    setEmail('admin@hyperqueue.io');
     setPassword('AdminPassword123!');
   };
 
@@ -69,7 +69,7 @@ export default function LoginPage() {
             <Activity className="h-7 w-7 text-white" />
           </div>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-white">
-            Welcome to SaarthiFlow
+            Welcome to HyperQueue Engine
           </h2>
           <p className="mt-1 text-xs text-slate-400">
             Sign in to access your task automation dashboard
@@ -118,7 +118,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
-                placeholder="user@saarthi.ai"
+                placeholder="user@hyperqueue.io"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);

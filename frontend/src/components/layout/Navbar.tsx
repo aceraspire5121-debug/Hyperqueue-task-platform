@@ -28,7 +28,7 @@ export const Navbar = () => {
             <Activity className="h-6 w-6 text-white" />
           </div>
           <div>
-            <span className="text-lg font-bold tracking-tight text-white">SaarthiFlow</span>
+            <span className="text-lg font-bold tracking-tight text-white">HyperQueue Engine</span>
             <span className="hidden sm:inline-block ml-2 text-xs font-medium text-slate-400">
               Task Automation & Job Engine
             </span>

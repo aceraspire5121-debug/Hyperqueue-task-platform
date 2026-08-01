@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { loadStoredAuth } from '../../store/authSlice';
-import { toggleCreateModal } from '../../store/uiSlice';
+import {
+  toggleCreateModal,
+  setSearchQuery,
+  setStatusFilter,
+  setPriorityFilter,
+  setCurrentPage,
+} from '../../store/uiSlice';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
@@ -21,11 +27,10 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.auth);
 
-  // Search & Filter state
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [priority, setPriority] = useState('');
-  const [page, setPage] = useState(1);
+  // Search & Filter & Pagination state from Redux UI Store
+  const { searchQuery: search, statusFilter: status, priorityFilter: priority, currentPage: page } = useSelector(
+    (state: RootState) => state.ui
+  );
 
   // Initialize WebSockets for real-time live task updates
   useWebSocket(user?.id);
@@ -120,10 +125,7 @@ export default function DashboardPage() {
             type="text"
             placeholder="Search tasks by title or description..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
             className="w-full rounded-lg bg-slate-950 border border-slate-800 pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
           />
         </div>
@@ -138,10 +140,7 @@ export default function DashboardPage() {
           {/* Status Filter */}
           <select
             value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => dispatch(setStatusFilter(e.target.value))}
             className="rounded-lg bg-slate-950 border border-slate-800 px-3 py-1.5 text-xs text-white focus:border-blue-500 focus:outline-none"
           >
             <option value="">All Statuses</option>
@@ -154,10 +153,7 @@ export default function DashboardPage() {
           {/* Priority Filter */}
           <select
             value={priority}
-            onChange={(e) => {
-              setPriority(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => dispatch(setPriorityFilter(e.target.value))}
             className="rounded-lg bg-slate-950 border border-slate-800 px-3 py-1.5 text-xs text-white focus:border-blue-500 focus:outline-none"
           >
             <option value="">All Priorities</option>
@@ -182,14 +178,14 @@ export default function DashboardPage() {
           <div className="flex items-center space-x-2">
             <button
               disabled={page <= 1}
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => dispatch(setCurrentPage(Math.max(page - 1, 1)))}
               className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300 disabled:opacity-50 hover:bg-slate-800"
             >
               Previous
             </button>
             <button
               disabled={page >= tasksData.totalPages}
-              onClick={() => setPage((prev) => Math.min(prev + 1, tasksData.totalPages))}
+              onClick={() => dispatch(setCurrentPage(Math.min(page + 1, tasksData.totalPages)))}
               className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300 disabled:opacity-50 hover:bg-slate-800"
             >
               Next

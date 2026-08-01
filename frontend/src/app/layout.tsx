@@ -4,7 +4,7 @@ import Providers from './Providers';
 import { Navbar } from '../components/layout/Navbar';
 
 export const metadata: Metadata = {
-  title: 'SaarthiFlow - Micro SaaS Task Automation Platform',
+  title: 'HyperQueue Engine - Micro SaaS Task Automation Platform',
   description: 'Production-ready task automation and asynchronous job processing platform with real-time WebSockets and BullMQ retries.',
 };
 

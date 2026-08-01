@@ -6,6 +6,7 @@ interface UIState {
   searchQuery: string;
   statusFilter: string;
   priorityFilter: string;
+  currentPage: number;
 }
 //2 states banayi hai ek user details aur sessions hai bo store kar raha hai doosra hamari search filter modal open ye sab save kar raha hai
 
@@ -15,6 +16,7 @@ const initialState: UIState = {
   searchQuery: '',
   statusFilter: '',
   priorityFilter: '',
+  currentPage: 1,
 };
 
 export const uiSlice = createSlice({
@@ -29,12 +31,18 @@ export const uiSlice = createSlice({
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
+      state.currentPage = 1;
     },
     setStatusFilter: (state, action: PayloadAction<string>) => {
       state.statusFilter = action.payload;
+      state.currentPage = 1;
     },
     setPriorityFilter: (state, action: PayloadAction<string>) => {
       state.priorityFilter = action.payload;
+      state.currentPage = 1;
+    },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.currentPage = action.payload;
     },
   },
 });
@@ -45,6 +53,7 @@ export const {
   setSearchQuery,
   setStatusFilter,
   setPriorityFilter,
+  setCurrentPage,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

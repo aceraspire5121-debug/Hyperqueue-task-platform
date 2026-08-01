@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Saarthi AI - Task Automation Platform APIs",
+    "name": "hyperqueue.io - Task Automation Platform APIs",
     "description": "Postman API Collection for testing MERN/Full Stack Technical Assessment endpoints",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -15,7 +15,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Test Candidate\",\n  \"email\": \"test@saarthi.ai\",\n  \"password\": \"TestPass123!\",\n  \"role\": \"USER\"\n}"
+              "raw": "{\n  \"name\": \"Test Candidate\",\n  \"email\": \"test@hyperqueue.io\",\n  \"password\": \"TestPass123!\",\n  \"role\": \"USER\"\n}"
             },
             "url": { "raw": "http://localhost:5000/api/v1/auth/register" }
           }
@@ -27,7 +27,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@saarthi.ai\",\n  \"password\": \"UserPassword123!\"\n}"
+              "raw": "{\n  \"email\": \"user@hyperqueue.io\",\n  \"password\": \"UserPassword123!\"\n}"
             },
             "url": { "raw": "http://localhost:5000/api/v1/auth/login" }
           }

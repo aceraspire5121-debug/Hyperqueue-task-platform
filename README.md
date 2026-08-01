@@ -1,4 +1,4 @@
-# 🚀 Saarthi AI - Task Automation & Job Processing Platform
+# 🚀 hyperqueue.io - Task Automation & Job Processing Platform
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
@@ -7,7 +7,7 @@
 [![Redis](https://img.shields.io/badge/Redis-BullMQ-red.svg)](https://redis.io/)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-Realtime-black.svg)](https://socket.io/)
 
-Production-ready **Micro SaaS Task Automation & Asynchronous Job Processing Platform** built for Saarthi AI Technical Assessment.
+Production-ready **Micro SaaS Task Automation & Asynchronous Job Processing Platform** built for hyperqueue.io Technical Assessment.
 
 ---
 
@@ -51,7 +51,7 @@ graph TD
 ## 📂 Project Directory Structure
 
 ```
-saarthi-task-platform/
+hyperqueue-task-platform/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # Centralized configuration (MongoDB, Redis, Env vars)
@@ -92,8 +92,8 @@ saarthi-task-platform/
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/your-username/saarthi-task-platform.git
-cd saarthi-task-platform
+git clone https://github.com/your-username/hyperqueue-task-platform.git
+cd hyperqueue-task-platform
 ```
 
 ### Step 2: Run Backend Service
@@ -117,8 +117,8 @@ npm run dev      # Client starts on http://localhost:3000
 
 | Account Role | Email | Password |
 | :--- | :--- | :--- |
-| **System Admin** | `admin@saarthi.ai` | `AdminPassword123!` |
-| **Demo Developer** | `user@saarthi.ai` | `UserPassword123!` |
+| **System Admin** | `admin@hyperqueue.io` | `AdminPassword123!` |
+| **Demo Developer** | `user@hyperqueue.io` | `UserPassword123!` |
 
 *(Note: The login page includes quick-fill buttons for instant testing!)*
 

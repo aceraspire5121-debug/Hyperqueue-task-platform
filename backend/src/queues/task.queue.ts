@@ -2,7 +2,7 @@ import { Queue } from 'bullmq';
 import { redisClient } from '../config/redis';
 import { logger } from '../utils/logger';
 
-export const TASK_QUEUE_NAME = 'saarthi_task_queue';
+export const TASK_QUEUE_NAME = 'hyperqueue_task_queue';
 
 export const taskQueue = new Queue(TASK_QUEUE_NAME, {
   connection: redisClient,

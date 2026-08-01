@@ -24,7 +24,7 @@ app.use(rateLimiter);
 
 // Health Check Endpoint
 app.get('/health', (req: Request, res: Response) => {
-  return ApiResponse.success(res, 'Saarthi Task Automation Backend Service Operational (MongoDB Stack)', {
+  return ApiResponse.success(res, 'HyperQueue Task Automation Backend Service Operational (MongoDB Stack)', {
     status: 'UP',
     timestamp: new Date().toISOString(),
     env: config.nodeEnv,

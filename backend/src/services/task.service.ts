@@ -41,6 +41,14 @@ export class TaskService {
     const delay = scheduledDate ? Math.max(0, scheduledDate.getTime() - Date.now()) : 0; //agar future time hai to kitne miliseconds 
     //baad tasks ka execution start karna hai bahi delay hai
 
+    // Map Priority Enum to BullMQ Numeric Priority (1 = Highest URGENT, 4 = Lowest LOW)
+    const priorityMap: Record<TaskPriority, number> = {
+      [TaskPriority.URGENT]: 1,
+      [TaskPriority.HIGH]: 2,
+      [TaskPriority.MEDIUM]: 3,
+      [TaskPriority.LOW]: 4,
+    };
+
     await taskQueue.add(
       'process_task',
       {
@@ -52,6 +60,7 @@ export class TaskService {
       {
         delay,
         attempts: task.maxRetries,
+        priority: priorityMap[task.priority] || 3,
       }
     );
 
@@ -165,7 +174,14 @@ export class TaskService {
 
     await taskRepository.addLog(taskId, TaskStatus.PENDING, 'Task retry initiated by user');
 
-    // Re-queue in BullMQ
+    const priorityMap: Record<TaskPriority, number> = {
+      [TaskPriority.URGENT]: 1,
+      [TaskPriority.HIGH]: 2,
+      [TaskPriority.MEDIUM]: 3,
+      [TaskPriority.LOW]: 4,
+    };
+
+    // Re-queue in BullMQ with priority
     await taskQueue.add(
       'process_task',
       {
@@ -176,6 +192,7 @@ export class TaskService {
       },
       {
         attempts: task.maxRetries,
+        priority: priorityMap[task.priority] || 3,
       }
     );
 

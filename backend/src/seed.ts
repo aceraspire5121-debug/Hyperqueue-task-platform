@@ -19,7 +19,7 @@ const seedDatabase = async () => {
     // 1. Create Admin User
     const adminPasswordHash = await bcrypt.hash('AdminPassword123!', 10);
     const admin = await User.create({
-      email: 'admin@saarthi.ai',
+      email: 'admin@hyperqueue.io',
       name: 'System Admin',
       password: adminPasswordHash,
       role: UserRole.ADMIN,
@@ -28,13 +28,13 @@ const seedDatabase = async () => {
     // 2. Create Regular Demo User
     const userPasswordHash = await bcrypt.hash('UserPassword123!', 10);
     const demoUser = await User.create({
-      email: 'user@saarthi.ai',
+      email: 'user@hyperqueue.io',
       name: 'Demo Developer',
       password: userPasswordHash,
       role: UserRole.USER,
     });
 
-    logger.info('👤 Admin (admin@saarthi.ai) & Demo User (user@saarthi.ai) created.');
+    logger.info('👤 Admin (admin@hyperqueue.io) & Demo User (user@hyperqueue.io) created.');
 
     // 3. Create Sample Tasks
     const sampleTasks = [
