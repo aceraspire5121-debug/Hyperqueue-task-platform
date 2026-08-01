@@ -26,7 +26,7 @@ export default function LoginPage() {
       const res = await api.post('/auth/login', { email, password });
       if (res.data.success) {
         const { user, tokens } = res.data.data;
-        dispatch(
+        dispatch( // redux store me save kar liye
           setAuth({
             user,
             accessToken: tokens.accessToken,
@@ -36,8 +36,15 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || 'Invalid email or password credentials.');
-    } font-medium {
+      const apiErr = err.response?.data;
+      if (apiErr?.errors && Array.isArray(apiErr.errors)) {
+        setErrorMsg(apiErr.errors.map((e: any) => e.message).join('. '));
+      } else if (apiErr?.message) {
+        setErrorMsg(apiErr.message);
+      } else {
+        setErrorMsg('Invalid email or password credentials.');
+      }
+    } finally {
       setIsLoading(false);
     }
   };
@@ -113,7 +120,10 @@ export default function LoginPage() {
                 required
                 placeholder="user@saarthi.ai"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
                 className="w-full rounded-lg bg-slate-950 border border-slate-800 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
@@ -130,7 +140,10 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
                 className="w-full rounded-lg bg-slate-950 border border-slate-800 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
