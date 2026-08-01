@@ -38,7 +38,8 @@ export class TaskService {
     await taskRepository.addLog(task._id.toString(), TaskStatus.PENDING, 'Task created and added to queue');
 
     // 3. Queue job in BullMQ
-    const delay = scheduledDate ? Math.max(0, scheduledDate.getTime() - Date.now()) : 0;
+    const delay = scheduledDate ? Math.max(0, scheduledDate.getTime() - Date.now()) : 0; //agar future time hai to kitne miliseconds 
+    //baad tasks ka execution start karna hai bahi delay hai
 
     await taskQueue.add(
       'process_task',
@@ -151,12 +152,16 @@ export class TaskService {
       throw new AppError('Only FAILED tasks can be retried', 400);
     }
 
-    // Reset status to PENDING
+    // Clear simulated error flag so manual retry succeeds!
+    const cleanPayload = { ...task.payload, simulateError: false, failSimulated: false };
+
+    // Reset status to PENDING and clear failedReason
     const updatedTask = await taskRepository.update(taskId, {
       status: TaskStatus.PENDING,
-      failedReason: undefined,
+      failedReason: '',
       retries: 0,
-    });
+      payload: cleanPayload,
+    } as any);
 
     await taskRepository.addLog(taskId, TaskStatus.PENDING, 'Task retry initiated by user');
 
@@ -167,7 +172,7 @@ export class TaskService {
         taskId: task._id.toString(),
         userId: taskOwnerId,
         title: task.title,
-        payload: task.payload,
+        payload: cleanPayload,
       },
       {
         attempts: task.maxRetries,

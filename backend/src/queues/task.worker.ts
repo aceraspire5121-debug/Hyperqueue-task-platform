@@ -27,16 +27,18 @@ export const initTaskWorker = () => {
         `Task execution started (Attempt ${job.attemptsMade + 1})`
       );
 
-      // 3. Emit live WebSockets event to connected clients
+      // 3. Emit live WebSockets event to connected clients & invalidate metrics cache
       if (processingTask) {
+        await redisClient.del(`metrics:${userId}`);
+        await redisClient.del('metrics:admin');
         webSocketService.emitTaskUpdate(userId, processingTask);
       }
 
       // 4. Simulate Asynchronous Task Execution (e.g. PDF generation, API sync)
       await new Promise((resolve, reject) => {
         setTimeout(() => {
-          // If payload contains failSimulated = true, trigger error for retry demonstration
-          if (payload && payload.failSimulated && job.attemptsMade < 1) {
+          // If payload contains simulateError = true, trigger error for retry demonstration
+          if (payload && (payload.simulateError || payload.failSimulated)) {
             reject(new Error('Simulated worker processing error for retry demonstration'));
           } else {
             resolve(true);
@@ -56,8 +58,10 @@ export const initTaskWorker = () => {
         'Task completed successfully'
       );
 
-      // Emit live completion event via WebSocket
+      // Emit live completion event via WebSocket & invalidate metrics cache
       if (completedTask) {
+        await redisClient.del(`metrics:${userId}`);
+        await redisClient.del('metrics:admin');
         webSocketService.emitTaskUpdate(userId, completedTask);
       }
 
@@ -94,6 +98,8 @@ export const initTaskWorker = () => {
       );
 
       if (failedTask) {
+        await redisClient.del(`metrics:${userId}`);
+        await redisClient.del('metrics:admin');
         webSocketService.emitTaskUpdate(userId, failedTask);
       }
     } else {
