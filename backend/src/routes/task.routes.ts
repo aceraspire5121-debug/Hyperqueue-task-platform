@@ -13,6 +13,7 @@ router.post('/', validateRequest(createTaskSchema), taskController.createTask);
 router.get('/', taskController.getTasks);
 router.get('/metrics', taskController.getDashboardMetrics);
 router.get('/:id', taskController.getTaskById);
+router.get('/:id/logs', taskController.getTaskLogs);
 router.put('/:id', validateRequest(updateTaskSchema), taskController.updateTask);
 router.delete('/:id', taskController.deleteTask);
 router.post('/:id/retry', taskController.retryTask);

@@ -96,6 +96,19 @@ export class TaskController {
     }
   }
 
+  async getTaskLogs(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await taskService.getTaskById(
+        req.params.id,
+        req.user!.userId,
+        req.user!.role
+      );
+      return ApiResponse.success(res, 'Task audit logs retrieved', result.logs, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getDashboardMetrics(req: Request, res: Response, next: NextFunction) {
     try {
       const metrics = await taskService.getDashboardMetrics(
