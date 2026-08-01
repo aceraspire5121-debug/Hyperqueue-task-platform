@@ -22,7 +22,8 @@ export const errorMiddleware = (
       field: e.path.join('.'),
       message: e.message,
     }));
-    return ApiResponse.error(res, 'Validation error', 400, formattedErrors);
+    const detailedMessage = err.errors.map((e) => e.message).join('. ');
+    return ApiResponse.error(res, detailedMessage || 'Validation error', 400, formattedErrors);
   }
 
   if (err instanceof mongoose.Error.CastError) {
