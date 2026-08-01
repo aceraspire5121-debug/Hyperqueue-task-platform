@@ -11,10 +11,10 @@ import { Activity, LogOut, Plus, ShieldCheck, User as UserIcon } from 'lucide-re
 export const Navbar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth); // kaunsa user logged in hai uski details mang raha hai state.auth se
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logout()); //ye kah raha hai redux store me ki user ko logged out, isauthenticated false kardo usne logout kr lia
     router.push('/login');
   };
 
@@ -39,7 +39,7 @@ export const Navbar = () => {
         <div className="flex items-center space-x-4">
           {/* Create Task Button */}
           <button
-            onClick={() => dispatch(toggleCreateModal(true))}
+            onClick={() => dispatch(toggleCreateModal(true))} // ye redux store me info bhej raha hai ki toggleCreateModal true kardo user ne createtask par click kar dia hai
             className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500 shadow-md shadow-blue-600/20"
           >
             <Plus className="h-4 w-4" />
