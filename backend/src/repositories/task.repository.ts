@@ -93,10 +93,11 @@ export class TaskRepository implements ITaskRepository {
   }
 
   async delete(id: string): Promise<ITask | null> {
-    const deletedTask=await Task.findByIdAndDelete(id);
-    const deletedLogs=await TaskLog.deleteMany({taskId:id})
+    const [deletedTask] = await Promise.all([
+      Task.findByIdAndDelete(id),
+      TaskLog.deleteMany({ taskId: id }),
+    ]);
     return deletedTask;
-
   }
 
 

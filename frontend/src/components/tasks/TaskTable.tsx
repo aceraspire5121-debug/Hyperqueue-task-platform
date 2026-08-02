@@ -42,15 +42,50 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, isLoading }) => {
     }
   };
 
-  const handleDelete = async (taskId: string) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+  const handleDelete = async (targetTask: Task) => {
+    if (!confirm(`Are you sure you want to delete "${targetTask.title}"?`)) return;
+    const taskId = targetTask._id;
     setDeletingTaskId(taskId);
+
+    // 📸 1. Save Backup Snapshots for Rollback Safety
+    const previousTasks = queryClient.getQueriesData({ queryKey: ['tasks'] });
+    const previousMetrics = queryClient.getQueriesData({ queryKey: ['metrics'] });
+
+    // ⚡ 2. Instant 0ms Optimistic UI Removal (Both Table Row & Dashboard Cards)
+    queryClient.setQueriesData({ queryKey: ['tasks'], exact: false }, (oldData: any) => {
+      if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
+      return {
+        ...oldData,
+        tasks: oldData.tasks.filter((t: any) => String(t._id || t.id) !== String(taskId)),
+        total: Math.max(0, (oldData.total || 1) - 1),
+      };
+    });
+
+    queryClient.setQueriesData({ queryKey: ['metrics'], exact: false }, (oldMetrics: any) => {
+      if (!oldMetrics) return oldMetrics;
+      const statusKey = targetTask.status === TaskStatus.COMPLETED ? 'completedTasks' :
+                        targetTask.status === TaskStatus.FAILED ? 'failedTasks' :
+                        targetTask.status === TaskStatus.PROCESSING ? 'processingTasks' : 'pendingTasks';
+      return {
+        ...oldMetrics,
+        totalTasks: Math.max(0, (oldMetrics.totalTasks || 1) - 1),
+        [statusKey]: Math.max(0, (oldMetrics[statusKey] || 1) - 1),
+      };
+    });
+
     try {
       await api.delete(`/tasks/${taskId}`);
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['metrics'] });
+      queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false });
     } catch (err) {
       console.error('Failed to delete task:', err);
+      // 🛡️ Automatic Rollback to previous state if backend request fails
+      previousTasks.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      previousMetrics.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      alert('Failed to delete task on server. Restored to screen.');
     } finally {
       setDeletingTaskId(null);
     }
@@ -201,7 +236,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, isLoading }) => {
 
                     {/* Delete Button */}
                     <button
-                      onClick={() => handleDelete(task._id)}
+                      onClick={() => handleDelete(task)}
                       disabled={deletingTaskId === task._id}
                       title="Delete Task"
                       className="rounded p-1.5 text-slate-400 transition hover:bg-rose-500/20 hover:text-rose-400 disabled:opacity-50"
