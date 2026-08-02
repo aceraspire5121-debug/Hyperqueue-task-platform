@@ -6,6 +6,13 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://hyperqueue-tas
 
 let socket: Socket | null = null;
 
+const STATUS_PRIORITY: Record<string, number> = {
+  PENDING: 1,
+  PROCESSING: 2,
+  COMPLETED: 3,
+  FAILED: 3,
+};
+
 export const useWebSocket = (userId?: string) => {
   const queryClient = useQueryClient();
 
@@ -33,7 +40,7 @@ export const useWebSocket = (userId?: string) => {
 
       const targetId = String(updatedTask._id || updatedTask.id);
 
-      // 1. Instant 0ms Direct React Query Cache Mutation (Handles Update, Delete, & New Creation)
+      // 1. Instant 0ms Direct React Query Cache Mutation (With Status Hierarchy Protection)
       queryClient.setQueriesData({ queryKey: ['tasks'], exact: false }, (oldData: any) => {
         if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
 
@@ -49,15 +56,21 @@ export const useWebSocket = (userId?: string) => {
         const exists = oldData.tasks.some((task: any) => String(task._id || task.id) === targetId);
 
         if (exists) {
-          // Update existing task status
+          // Update existing task status with status hierarchy protection against out-of-order network packets
           return {
             ...oldData,
             tasks: oldData.tasks.map((task: any) => {
               if (String(task._id || task.id) === targetId) {
+                const currentPriority = STATUS_PRIORITY[task.status] || 0;
+                const newPriority = STATUS_PRIORITY[updatedTask.status] || 0;
+
+                // Protect against out-of-order network packets: Never downgrade a terminal status (COMPLETED/FAILED)
+                const safeStatus = (currentPriority >= 3 && newPriority < 3) ? task.status : updatedTask.status;
+
                 return {
                   ...task,
                   ...updatedTask,
-                  status: updatedTask.status,
+                  status: safeStatus,
                   completedAt: updatedTask.completedAt || task.completedAt,
                   failedReason: updatedTask.failedReason !== undefined ? updatedTask.failedReason : task.failedReason,
                   retries: updatedTask.retries !== undefined ? updatedTask.retries : task.retries,
@@ -76,7 +89,7 @@ export const useWebSocket = (userId?: string) => {
         }
       });
 
-      // 2. Immediate refetch active queries to ensure backend consistency
+      // 2. Immediate refetch active queries for complete backend consistency
       queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false, refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false, refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['task_logs'], exact: false, refetchType: 'all' });
