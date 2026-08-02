@@ -34,7 +34,7 @@ export default function DashboardPage() {
   );
 
   // Initialize WebSockets for real-time live task updates
-  useWebSocket(user?.id);
+  useWebSocket(user?.id || (user as any)?._id);
 
   useEffect(() => {
     dispatch(loadStoredAuth());
