@@ -33,8 +33,8 @@ export const useWebSocket = (userId?: string) => {
 
       const targetId = updatedTask._id || updatedTask.id;
 
-      // 1. Instant 0ms Direct React Query Cache Mutation
-      queryClient.setQueriesData({ queryKey: ['tasks'] }, (oldData: any) => {
+      // 1. Instant 0ms Direct React Query Cache Mutation (exact: false matches 5-element queryKey array)
+      queryClient.setQueriesData({ queryKey: ['tasks'], exact: false }, (oldData: any) => {
         if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
         return {
           ...oldData,
@@ -54,10 +54,10 @@ export const useWebSocket = (userId?: string) => {
         };
       });
 
-      // 2. Force refetch all matching task queries in TanStack Query v5
-      queryClient.invalidateQueries({ queryKey: ['tasks'], refetchType: 'all' });
-      queryClient.invalidateQueries({ queryKey: ['metrics'], refetchType: 'all' });
-      queryClient.invalidateQueries({ queryKey: ['task_logs'], refetchType: 'all' });
+      // 2. Force refetch all matching task queries in TanStack Query v5 with exact: false
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false, refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false, refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['task_logs'], exact: false, refetchType: 'all' });
     };
 
     socket.on('task_status_updated', handleTaskUpdate);
