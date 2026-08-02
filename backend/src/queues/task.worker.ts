@@ -37,7 +37,9 @@ export const initTaskWorker = () => {
         webSocketService.emitTaskUpdate(userId, processingTask);
       }
 
-      // 4. Simulate Asynchronous Task Execution (e.g. PDF processing, Image compression)
+      // 4. Simulate Asynchronous Task Execution (Normal work = 4s, Fail demo = 1s)
+      const workDuration = payload && (payload.simulateError || payload.failSimulated) ? 1000 : 4000;
+
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           // If payload contains simulateError = true, trigger error for retry demonstration
@@ -46,7 +48,7 @@ export const initTaskWorker = () => {
           } else {
             resolve(true);
           }
-        }, 4000); // 2 seconds work simulation
+        }, workDuration);
       });
 
       // 5. Update status to COMPLETED with File-Aware completion logs

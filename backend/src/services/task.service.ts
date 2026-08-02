@@ -69,6 +69,9 @@ export class TaskService {
     await redisClient.del(`metrics:${userId}`);
     await redisClient.del('metrics:admin');
 
+    // 🟢 Emit live WebSockets event on Task Creation for instant multi-client sync!
+    webSocketService.emitTaskUpdate(userId, task);
+
     return task;
   }
 

@@ -24,9 +24,28 @@ export const useWebSocket = (userId?: string) => {
       });
     }
 
+    // Determine effective user ID (fallback to localStorage on client side if Redux is still loading)
+    const getEffectiveUserId = (): string | undefined => {
+      if (userId) return userId;
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('user');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            return parsed.id || parsed._id;
+          } catch (e) {
+            return undefined;
+          }
+        }
+      }
+      return undefined;
+    };
+
+    const effectiveUserId = getEffectiveUserId();
+
     const joinRoom = () => {
-      if (userId && socket) {
-        socket.emit('join_user_room', userId);
+      if (effectiveUserId && socket) {
+        socket.emit('join_user_room', effectiveUserId);
       }
     };
 
@@ -89,13 +108,9 @@ export const useWebSocket = (userId?: string) => {
         }
       });
 
-      // 2. Immediate refetch active queries for complete backend consistency
-      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false, refetchType: 'all' });
-      queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false, refetchType: 'all' });
-      queryClient.invalidateQueries({ queryKey: ['task_logs'], exact: false, refetchType: 'all' });
-      queryClient.refetchQueries({ queryKey: ['tasks'], exact: false, type: 'active' });
-      queryClient.refetchQueries({ queryKey: ['metrics'], exact: false, type: 'active' });
-      queryClient.refetchQueries({ queryKey: ['task_logs'], exact: false, type: 'active' });
+      // 2. Invalidate metrics & audit logs gracefully without triggering blocking HTTP refetches on task list
+      queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['task_logs'], exact: false });
     };
 
     socket.on('task_status_updated', handleTaskUpdate);
