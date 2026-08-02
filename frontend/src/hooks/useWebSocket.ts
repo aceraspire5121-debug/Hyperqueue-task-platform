@@ -8,9 +8,9 @@ let socket: Socket | null = null;
 
 const STATUS_PRIORITY: Record<string, number> = {
   PENDING: 1,
+  FAILED: 1,
   PROCESSING: 2,
   COMPLETED: 3,
-  FAILED: 3,
 };
 
 export const useWebSocket = (userId?: string) => {
@@ -40,7 +40,7 @@ export const useWebSocket = (userId?: string) => {
 
       const targetId = String(updatedTask._id || updatedTask.id);
 
-      // 1. Instant 0ms Direct React Query Cache Mutation (With Status Hierarchy Protection)
+      // 1. Instant 0ms Direct React Query Cache Mutation (With Retry-Friendly Status Hierarchy Protection)
       queryClient.setQueriesData({ queryKey: ['tasks'], exact: false }, (oldData: any) => {
         if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
 
@@ -64,7 +64,7 @@ export const useWebSocket = (userId?: string) => {
                 const currentPriority = STATUS_PRIORITY[task.status] || 0;
                 const newPriority = STATUS_PRIORITY[updatedTask.status] || 0;
 
-                // Protect against out-of-order network packets: Never downgrade a terminal status (COMPLETED/FAILED)
+                // Protect against out-of-order network packets: Never downgrade a terminal COMPLETED status, but allow retries from FAILED to PENDING/PROCESSING
                 const safeStatus = (currentPriority >= 3 && newPriority < 3) ? task.status : updatedTask.status;
 
                 return {
