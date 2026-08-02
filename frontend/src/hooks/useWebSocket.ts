@@ -28,10 +28,36 @@ export const useWebSocket = (userId?: string) => {
     socket.on('connect', joinRoom);
 
     const handleTaskUpdate = (updatedTask: any) => {
-      // Invalidate TanStack Query cache so UI re-renders with live data instantly!
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['metrics'] });
-      queryClient.invalidateQueries({ queryKey: ['task_logs'] });
+      console.log('⚡ Live WebSocket Event Received:', updatedTask);
+      if (!updatedTask || (!updatedTask._id && !updatedTask.id)) return;
+
+      const targetId = updatedTask._id || updatedTask.id;
+
+      // 1. Instant 0ms Direct React Query Cache Mutation
+      queryClient.setQueriesData({ queryKey: ['tasks'] }, (oldData: any) => {
+        if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
+        return {
+          ...oldData,
+          tasks: oldData.tasks.map((task: any) => {
+            const taskId = task._id || task.id;
+            if (taskId === targetId) {
+              return {
+                ...task,
+                status: updatedTask.status,
+                completedAt: updatedTask.completedAt || task.completedAt,
+                failedReason: updatedTask.failedReason || task.failedReason,
+                retries: updatedTask.retries !== undefined ? updatedTask.retries : task.retries,
+              };
+            }
+            return task;
+          }),
+        };
+      });
+
+      // 2. Force refetch all matching task queries in TanStack Query v5
+      queryClient.invalidateQueries({ queryKey: ['tasks'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['metrics'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['task_logs'], refetchType: 'all' });
     };
 
     socket.on('task_status_updated', handleTaskUpdate);
