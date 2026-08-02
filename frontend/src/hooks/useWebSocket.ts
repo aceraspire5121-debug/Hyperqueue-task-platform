@@ -31,21 +31,21 @@ export const useWebSocket = (userId?: string) => {
       console.log('⚡ Live WebSocket Event Received:', updatedTask);
       if (!updatedTask || (!updatedTask._id && !updatedTask.id)) return;
 
-      const targetId = updatedTask._id || updatedTask.id;
+      const targetId = String(updatedTask._id || updatedTask.id);
 
-      // 1. Instant 0ms Direct React Query Cache Mutation (exact: false matches 5-element queryKey array)
+      // 1. Instant 0ms Direct React Query Cache Mutation with String ID comparison
       queryClient.setQueriesData({ queryKey: ['tasks'], exact: false }, (oldData: any) => {
         if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
         return {
           ...oldData,
           tasks: oldData.tasks.map((task: any) => {
-            const taskId = task._id || task.id;
+            const taskId = String(task._id || task.id);
             if (taskId === targetId) {
               return {
                 ...task,
                 status: updatedTask.status,
                 completedAt: updatedTask.completedAt || task.completedAt,
-                failedReason: updatedTask.failedReason || task.failedReason,
+                failedReason: updatedTask.failedReason !== undefined ? updatedTask.failedReason : task.failedReason,
                 retries: updatedTask.retries !== undefined ? updatedTask.retries : task.retries,
               };
             }

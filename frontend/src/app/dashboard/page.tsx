@@ -60,6 +60,7 @@ export default function DashboardPage() {
     refetch,
   } = useQuery<{ tasks: Task[]; total: number; page: number; totalPages: number }>({
     queryKey: ['tasks', search, status, priority, page],
+    refetchInterval: 3000,
     queryFn: async () => {
       const res = await api.get('/tasks', {
         params: {
