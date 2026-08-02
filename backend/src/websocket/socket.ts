@@ -19,7 +19,12 @@ export class WebSocketService {
   public init(server: HttpServer) {
     this.io = new SocketIOServer(server, {
       cors: {
-        origin: config.clientUrl,
+        origin: (origin, callback) => {
+          if (!origin || config.clientUrl === '*' || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+            return callback(null, true);
+          }
+          return callback(null, config.clientUrl);
+        },
         methods: ['GET', 'POST'],
         credentials: true,
       },
