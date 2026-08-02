@@ -11,6 +11,16 @@ jobs:
     name: Automated Integration Testing & Build Verification
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
     steps:
       - name: 📥 Checkout Repository Code
         uses: actions/checkout@v4
@@ -26,6 +36,14 @@ jobs:
           npm install
 
       - name: 🧪 Run Backend Automated Jest Test Suite
+        env:
+          PORT: 5000
+          NODE_ENV: test
+          MONGODB_URI: mongodb://localhost:27017/hyperqueue_test_db
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_ACCESS_SECRET: test_secret_access_key_2026
+          JWT_REFRESH_SECRET: test_secret_refresh_key_2026
         run: |
           cd backend
           npm test
@@ -36,6 +54,9 @@ jobs:
           npm install
 
       - name: 🏗️ Verify Frontend Build Compilation
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1
+          NEXT_PUBLIC_SOCKET_URL: http://localhost:5000
         run: |
           cd frontend
           npm run build
