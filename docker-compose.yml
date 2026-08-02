@@ -45,6 +45,22 @@ services:
     networks:
       - hyperqueue_net
 
+  # 4. Next.js Frontend Web Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: hyperqueue_frontend_app
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+      - NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - hyperqueue_net
+
 volumes:
   mongo_data:
 
