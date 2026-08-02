@@ -46,7 +46,7 @@ export const initTaskWorker = () => {
           } else {
             resolve(true);
           }
-        }, 4000); // 4 seconds work simulation
+        }, 2000); // 2 seconds work simulation
       });
 
       // 5. Update status to COMPLETED with File-Aware completion logs
