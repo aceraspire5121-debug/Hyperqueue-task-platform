@@ -207,6 +207,7 @@ export class TaskService {
       {
         attempts: task.maxRetries,
         priority: priorityMap[task.priority] || 3,
+        delay: 500,
       }
     );
 
