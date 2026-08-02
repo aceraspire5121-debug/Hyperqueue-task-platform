@@ -3,16 +3,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface UIState {
   isCreateModalOpen: boolean;
   selectedTaskId: string | null;
+  editingTask: any | null;
   searchQuery: string;
   statusFilter: string;
   priorityFilter: string;
   currentPage: number;
 }
-//2 states banayi hai ek user details aur sessions hai bo store kar raha hai doosra hamari search filter modal open ye sab save kar raha hai
 
 const initialState: UIState = {
   isCreateModalOpen: false,
   selectedTaskId: null,
+  editingTask: null,
   searchQuery: '',
   statusFilter: '',
   priorityFilter: '',
@@ -28,6 +29,9 @@ export const uiSlice = createSlice({
     },
     setSelectedTaskId: (state, action: PayloadAction<string | null>) => {
       state.selectedTaskId = action.payload;
+    },
+    setEditingTask: (state, action: PayloadAction<any | null>) => {
+      state.editingTask = action.payload;
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
@@ -50,6 +54,7 @@ export const uiSlice = createSlice({
 export const {
   toggleCreateModal,
   setSelectedTaskId,
+  setEditingTask,
   setSearchQuery,
   setStatusFilter,
   setPriorityFilter,

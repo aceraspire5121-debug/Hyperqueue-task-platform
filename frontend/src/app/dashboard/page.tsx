@@ -20,6 +20,7 @@ import { MetricsCards } from '../../components/dashboard/MetricsCards';
 import { TaskTable } from '../../components/tasks/TaskTable';
 import { CreateTaskModal } from '../../components/tasks/CreateTaskModal';
 import { TaskDetailModal } from '../../components/tasks/TaskDetailModal';
+import { EditTaskModal } from '../../components/tasks/EditTaskModal';
 import { Search, Filter, RefreshCw, Plus } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -197,6 +198,7 @@ export default function DashboardPage() {
       {/* Modals */}
       <CreateTaskModal />
       <TaskDetailModal />
+      <EditTaskModal />
     </div>
   );
 }

@@ -8,12 +8,13 @@ import {
   AlertTriangle,
   Loader2,
   Eye,
+  Edit3,
   RefreshCw,
   Trash2,
   Calendar,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { setSelectedTaskId } from '../../store/uiSlice';
+import { setSelectedTaskId, setEditingTask } from '../../store/uiSlice';
 import { api } from '../../services/api';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -167,6 +168,15 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, isLoading }) => {
                       className="rounded p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white"
                     >
                       <Eye className="h-4 w-4" />
+                    </button>
+
+                    {/* Edit Task Button (Triggers PUT /api/v1/tasks/:id) */}
+                    <button
+                      onClick={() => dispatch(setEditingTask(task))}
+                      title="Edit Task Details"
+                      className="rounded p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-blue-400"
+                    >
+                      <Edit3 className="h-4 w-4" />
                     </button>
 
                     {/* Retry Button (Only for Failed tasks) */}

@@ -4,6 +4,7 @@ import { AppError } from '../utils/appError';
 import { TaskStatus, TaskPriority } from '../models/Task';
 import { UserRole } from '../models/User';
 import { redisClient } from '../config/redis';
+import { webSocketService } from '../websocket/socket';
 import mongoose from 'mongoose';
 
 const taskRepository = new TaskRepository();
@@ -122,6 +123,12 @@ export class TaskService {
     const updatedTask = await taskRepository.update(taskId, data);
     await redisClient.del(`metrics:${userId}`);
     await redisClient.del('metrics:admin');
+
+    // 🟢 Emit Real-Time WebSockets Event for Multi-Client Synchronization!
+    if (updatedTask) {
+      webSocketService.emitTaskUpdate(taskOwnerId, updatedTask);
+    }
+
     return updatedTask;
   }
 
@@ -141,6 +148,10 @@ export class TaskService {
     await taskRepository.delete(taskId);
     await redisClient.del(`metrics:${userId}`);
     await redisClient.del('metrics:admin');
+
+    // 🟢 Emit Real-Time WebSockets Event on Delete!
+    webSocketService.emitTaskUpdate(taskOwnerId, { ...existingTask.toObject(), _id: taskId, isDeleted: true } as any);
+
     return { message: 'Task deleted successfully' };
   }
 
