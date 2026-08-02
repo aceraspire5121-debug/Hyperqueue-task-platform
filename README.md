@@ -12,6 +12,16 @@ Production-ready **Micro SaaS Task Automation & Asynchronous Job Processing Plat
 
 ---
 
+## 🌐 Live Production Cloud Deployments
+
+| Component / Asset | Live Deployment URL | Hosting Platform |
+| :--- | :--- | :--- |
+| **Frontend Web App** | [https://hyperqueue-task-platform.vercel.app](https://hyperqueue-task-platform.vercel.app) | Vercel Edge |
+| **Backend REST API** | [https://hyperqueue-task-platform.onrender.com/health](https://hyperqueue-task-platform.onrender.com/health) | Render Cloud |
+| **Video Walkthrough Demo** | [Watch 5-Min Loom Walkthrough](https://www.loom.com/share/1087f1e38e834196af3c4ad5410f3207) | Loom |
+
+---
+
 ## 📌 Project Overview
 
 **hyperqueue.io** is a full-stack asynchronous task automation platform engineered to queue, process, monitor, and retry background jobs at scale. Built using modern cloud microservice standards, it decoupled long-running workload execution from main HTTP web request threads using **BullMQ & Redis**, while streaming real-time job execution telemetry to interactive glassmorphic client dashboards via **Socket.IO WebSockets**.
