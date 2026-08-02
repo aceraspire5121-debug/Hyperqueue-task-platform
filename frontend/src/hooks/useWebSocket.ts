@@ -33,31 +33,53 @@ export const useWebSocket = (userId?: string) => {
 
       const targetId = String(updatedTask._id || updatedTask.id);
 
-      // 1. Instant 0ms Direct React Query Cache Mutation with String ID comparison
+      // 1. Instant 0ms Direct React Query Cache Mutation (Handles Update, Delete, & New Creation)
       queryClient.setQueriesData({ queryKey: ['tasks'], exact: false }, (oldData: any) => {
         if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
-        return {
-          ...oldData,
-          tasks: oldData.tasks.map((task: any) => {
-            const taskId = String(task._id || task.id);
-            if (taskId === targetId) {
-              return {
-                ...task,
-                status: updatedTask.status,
-                completedAt: updatedTask.completedAt || task.completedAt,
-                failedReason: updatedTask.failedReason !== undefined ? updatedTask.failedReason : task.failedReason,
-                retries: updatedTask.retries !== undefined ? updatedTask.retries : task.retries,
-              };
-            }
-            return task;
-          }),
-        };
+
+        // Handle Delete Event
+        if (updatedTask.isDeleted) {
+          return {
+            ...oldData,
+            tasks: oldData.tasks.filter((task: any) => String(task._id || task.id) !== targetId),
+            total: Math.max(0, (oldData.total || 1) - 1),
+          };
+        }
+
+        const exists = oldData.tasks.some((task: any) => String(task._id || task.id) === targetId);
+
+        if (exists) {
+          // Update existing task status
+          return {
+            ...oldData,
+            tasks: oldData.tasks.map((task: any) => {
+              if (String(task._id || task.id) === targetId) {
+                return {
+                  ...task,
+                  ...updatedTask,
+                  status: updatedTask.status,
+                  completedAt: updatedTask.completedAt || task.completedAt,
+                  failedReason: updatedTask.failedReason !== undefined ? updatedTask.failedReason : task.failedReason,
+                  retries: updatedTask.retries !== undefined ? updatedTask.retries : task.retries,
+                };
+              }
+              return task;
+            }),
+          };
+        } else {
+          // Prepend new created task to top of list!
+          return {
+            ...oldData,
+            tasks: [updatedTask, ...oldData.tasks],
+            total: (oldData.total || 0) + 1,
+          };
+        }
       });
 
-      // 2. Force refetch all matching task queries in TanStack Query v5 with exact: false
-      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false, refetchType: 'all' });
-      queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false, refetchType: 'all' });
-      queryClient.invalidateQueries({ queryKey: ['task_logs'], exact: false, refetchType: 'all' });
+      // 2. Immediate refetch active queries to ensure backend consistency
+      queryClient.refetchQueries({ queryKey: ['tasks'], exact: false, type: 'active' });
+      queryClient.refetchQueries({ queryKey: ['metrics'], exact: false, type: 'active' });
+      queryClient.refetchQueries({ queryKey: ['task_logs'], exact: false, type: 'active' });
     };
 
     socket.on('task_status_updated', handleTaskUpdate);
