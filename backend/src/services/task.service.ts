@@ -146,7 +146,8 @@ export class TaskService {
     }
 
     await taskRepository.delete(taskId);
-    await redisClient.del(`metrics:${userId}`);
+    await redisClient.del(`metrics:${String(userId)}`);
+    await redisClient.del(`metrics:${String(taskOwnerId)}`);
     await redisClient.del('metrics:admin');
 
     // 🟢 Emit Real-Time WebSockets Event on Delete!
@@ -211,14 +212,15 @@ export class TaskService {
       }
     );
 
-    await redisClient.del(`metrics:${userId}`);
+    await redisClient.del(`metrics:${String(userId)}`);
+    await redisClient.del(`metrics:${String(taskOwnerId)}`);
     await redisClient.del('metrics:admin');
 
     return updatedTask;
   }
 
   async getDashboardMetrics(userId: string, userRole: UserRole) {
-    const cacheKey = userRole === UserRole.ADMIN ? 'metrics:admin' : `metrics:${userId}`;
+    const cacheKey = userRole === UserRole.ADMIN ? 'metrics:admin' : `metrics:${String(userId)}`;
 
     // Redis Caching for frequently accessed Dashboard APIs (Assessment Requirement)
     const cachedMetrics = await redisClient.get(cacheKey);

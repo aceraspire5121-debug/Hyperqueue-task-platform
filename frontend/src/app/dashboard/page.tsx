@@ -47,6 +47,7 @@ export default function DashboardPage() {
   // TanStack Query: Fetch Metrics
   const { data: metricsData, isLoading: metricsLoading } = useQuery<TaskMetrics>({
     queryKey: ['metrics'],
+    refetchInterval: 3000,
     queryFn: async () => {
       const res = await api.get('/tasks/metrics');
       return res.data.data;

@@ -77,6 +77,9 @@ export const useWebSocket = (userId?: string) => {
       });
 
       // 2. Immediate refetch active queries to ensure backend consistency
+      queryClient.invalidateQueries({ queryKey: ['tasks'], exact: false, refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['metrics'], exact: false, refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['task_logs'], exact: false, refetchType: 'all' });
       queryClient.refetchQueries({ queryKey: ['tasks'], exact: false, type: 'active' });
       queryClient.refetchQueries({ queryKey: ['metrics'], exact: false, type: 'active' });
       queryClient.refetchQueries({ queryKey: ['task_logs'], exact: false, type: 'active' });
