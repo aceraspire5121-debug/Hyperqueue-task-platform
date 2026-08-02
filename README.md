@@ -205,15 +205,23 @@ Complete Postman Collection file is available at:
 
 ---
 
-## 🎥 Video Submission & Walkthrough Talking Points
+## 🎥 Video Submission Walkthrough
 
-When recording the 5-10 minute video presentation for submission, cover these key technical highlights in order:
+> [!IMPORTANT]
+> **5-10 Minute Video Walkthrough Demo**:
+> 
+> 🔗 **[Click Here to Watch Video Presentation (Loom / Google Drive Link)](YOUR_PUBLIC_VIDEO_LINK_HERE)**  
+> *(Note: Replace `YOUR_PUBLIC_VIDEO_LINK_HERE` with your public video URL after recording!)*
 
-1. **Overall Architecture (1-2 mins)**: Explain 3-Tier Layered Architecture (Controller ➔ Service ➔ Repository Pattern).
-2. **Authentication & Token Rotation (2 mins)**: Demonstrate JWT Access Token (15m) + Refresh Token Rotation (7d) security.
-3. **Asynchronous BullMQ Queue & Retries (2 mins)**: Show task creation entering BullMQ Redis queue, processing (`PENDING` ➔ `PROCESSING` ➔ `COMPLETED`/`FAILED`), and exponential retries.
-4. **Real-time WebSockets & Live Dashboard (2 mins)**: Demonstrate live Socket.IO events updating status badges and metric cards without manual page refresh.
-5. **Trade-offs & Cloud Deployment (1 min)**: Highlight live deployment links on Vercel & Render with Cloudinary CDN asset uploads.
+### Key Talking Points Covered in Video:
+1. **Overall Architecture**: 3-Tier Layered Architecture (Controller ➔ Service ➔ Repository Pattern).
+2. **Folder Structure**: Decoupled `backend/` REST API & `frontend/` Next.js App Router structure.
+3. **Authentication Flow**: JWT Access Token (15m) + Refresh Token Rotation (7d) security.
+4. **Queue Processing**: BullMQ + Redis for asynchronous background job execution & retries.
+5. **Redis Integration**: Redis session blacklist & 30-second TTL metrics caching.
+6. **Database Design**: MongoDB Atlas schemas, Compound Indexes, Full-Text Search.
+7. **Key Engineering Decisions**: Real-time Socket.IO WebSockets & 0ms Optimistic UI updates.
+8. **Future Improvements**: Multi-tenant organizations & Webhook callback URLs.
 
 ---
 
