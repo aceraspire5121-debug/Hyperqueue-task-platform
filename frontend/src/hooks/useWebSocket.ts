@@ -28,7 +28,6 @@ export const useWebSocket = (userId?: string) => {
     socket.on('connect', joinRoom);
 
     const handleTaskUpdate = (updatedTask: any) => {
-      console.log('⚡ Live WebSocket Event Received:', updatedTask);
       if (!updatedTask || (!updatedTask._id && !updatedTask.id)) return;
 
       const targetId = updatedTask._id || updatedTask.id;
@@ -36,6 +35,17 @@ export const useWebSocket = (userId?: string) => {
       // 1. Instant 0ms Direct React Query Cache Mutation
       queryClient.setQueriesData({ queryKey: ['tasks'] }, (oldData: any) => {
         if (!oldData || !oldData.tasks || !Array.isArray(oldData.tasks)) return oldData;
+
+        // Handle Delete Event (Remove Row Instant 0ms)
+        if (updatedTask.isDeleted) {
+          return {
+            ...oldData,
+            tasks: oldData.tasks.filter((task: any) => (task._id || task.id) !== targetId),
+            total: Math.max(0, (oldData.total || 1) - 1),
+          };
+        }
+
+        // Handle Status / Details Update Event
         return {
           ...oldData,
           tasks: oldData.tasks.map((task: any) => {
@@ -43,7 +53,7 @@ export const useWebSocket = (userId?: string) => {
             if (taskId === targetId) {
               return {
                 ...task,
-                status: updatedTask.status,
+                ...updatedTask,
                 completedAt: updatedTask.completedAt || task.completedAt,
                 failedReason: updatedTask.failedReason || task.failedReason,
                 retries: updatedTask.retries !== undefined ? updatedTask.retries : task.retries,
@@ -54,7 +64,7 @@ export const useWebSocket = (userId?: string) => {
         };
       });
 
-      // 2. Force refetch all matching task queries in TanStack Query v5
+      // 2. Pure TanStack Query Background Refetch (Sync Data)
       queryClient.invalidateQueries({ queryKey: ['tasks'], refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['metrics'], refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: ['task_logs'], refetchType: 'all' });
