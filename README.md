@@ -210,8 +210,7 @@ Complete Postman Collection file is available at:
 > [!IMPORTANT]
 > **5-10 Minute Video Walkthrough Demo**:
 > 
-> 🔗 **[Click Here to Watch Video Presentation (Loom / Google Drive Link)](YOUR_PUBLIC_VIDEO_LINK_HERE)**  
-> *(Note: Replace `YOUR_PUBLIC_VIDEO_LINK_HERE` with your public video URL after recording!)*
+> 🔗 **[Click Here to Watch Video Presentation (Loom Walkthrough)](https://www.loom.com/share/d14d1cd84de44fbd891d51ccbcc51fc3)**
 
 ### Key Talking Points Covered in Video:
 1. **Overall Architecture**: 3-Tier Layered Architecture (Controller ➔ Service ➔ Repository Pattern).
