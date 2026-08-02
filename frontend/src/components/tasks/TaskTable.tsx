@@ -26,25 +26,33 @@ interface TaskTableProps {
 export const TaskTable: React.FC<TaskTableProps> = ({ tasks, isLoading }) => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const [retryingTaskId, setRetryingTaskId] = React.useState<string | null>(null);
+  const [deletingTaskId, setDeletingTaskId] = React.useState<string | null>(null);
 
   const handleRetry = async (taskId: string) => {
+    setRetryingTaskId(taskId);
     try {
       await api.post(`/tasks/${taskId}/retry`);
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['metrics'] });
     } catch (err) {
       console.error('Failed to retry task:', err);
+    } finally {
+      setRetryingTaskId(null);
     }
   };
 
   const handleDelete = async (taskId: string) => {
     if (!confirm('Are you sure you want to delete this task?')) return;
+    setDeletingTaskId(taskId);
     try {
       await api.delete(`/tasks/${taskId}`);
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['metrics'] });
     } catch (err) {
       console.error('Failed to delete task:', err);
+    } finally {
+      setDeletingTaskId(null);
     }
   };
 
@@ -183,20 +191,26 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, isLoading }) => {
                     {task.status === TaskStatus.FAILED && (
                       <button
                         onClick={() => handleRetry(task._id)}
+                        disabled={retryingTaskId === task._id}
                         title="Retry Failed Task"
-                        className="rounded p-1.5 text-amber-400 transition hover:bg-amber-500/20"
+                        className="rounded p-1.5 text-amber-400 transition hover:bg-amber-500/20 disabled:opacity-50"
                       >
-                        <RefreshCw className="h-4 w-4" />
+                        <RefreshCw className={`h-4 w-4 ${retryingTaskId === task._id ? 'animate-spin' : ''}`} />
                       </button>
                     )}
 
                     {/* Delete Button */}
                     <button
                       onClick={() => handleDelete(task._id)}
+                      disabled={deletingTaskId === task._id}
                       title="Delete Task"
-                      className="rounded p-1.5 text-slate-400 transition hover:bg-rose-500/20 hover:text-rose-400"
+                      className="rounded p-1.5 text-slate-400 transition hover:bg-rose-500/20 hover:text-rose-400 disabled:opacity-50"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {deletingTaskId === task._id ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-rose-400" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 </td>
