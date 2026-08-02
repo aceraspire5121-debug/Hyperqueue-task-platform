@@ -185,6 +185,9 @@ export class TaskService {
 
     await taskRepository.addLog(taskId, TaskStatus.PENDING, 'Task retry initiated by user');
 
+    // 🟢 Emit live WebSockets event on Retry!
+    webSocketService.emitTaskUpdate(taskOwnerId, updatedTask);
+
     const priorityMap: Record<TaskPriority, number> = {
       [TaskPriority.URGENT]: 1,
       [TaskPriority.HIGH]: 2,
