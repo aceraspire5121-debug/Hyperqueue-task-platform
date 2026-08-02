@@ -64,7 +64,14 @@ export class AuthService {
     const storedToken = await refreshTokenRepository.findByToken(token);
 
     if (!storedToken || storedToken.isRevoked || storedToken.expiresAt < new Date()) {
-      throw new AppError('Invalid or expired refresh token', 401);
+      throw new AppError('Invalid or expired refresh token', 401); //jab admin kisi user ka token mark karde revoked tab chalgea ye
+      //barna to jab bhi accessToken expire hoga tab refreshToken request jayegi aur naya pair generate hokar bapas chala jayega aur
+      //yahi rotation chalta rahega to accessToken expire dubara hoga dubara same process repeat with newRefreshToken, ye line tabhi execute
+      //hogi jab 7 din ho gye aur token revoke nhi hua, admin ne khudse token ko revoke mark kar dia aur ab request yaha aayi refresh hone ke liye
+      //isse agar kabhi kisi hacker ne purana token use karne ki kosis kari to turant ye throw chal jayegi jisse app.ts me interceptor
+      //ki response bale block me else execute ho jayega aur localstorage se token remove hote hi user ko login page par bhej dia jayega
+      //so its a security feature, barna to har 15 minute me ham token revoke kar rahe hai aur naya pair generate kar hi rahe hai,normally
+      //ye kabhi chalega hi nhi
     }
 
     // Revoke current refresh token (Token Rotation)
