@@ -6,6 +6,18 @@
   },
   "item": [
     {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Service Health Check",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:5000/health"
+          }
+        }
+      ]
+    },
+    {
       "name": "Auth",
       "item": [
         {
@@ -17,7 +29,7 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Test Candidate\",\n  \"email\": \"test@hyperqueue.io\",\n  \"password\": \"TestPass123!\",\n  \"role\": \"USER\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/v1/auth/register" }
+            "url": "http://localhost:5000/api/v1/auth/register"
           }
         },
         {
@@ -29,7 +41,7 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"user@hyperqueue.io\",\n  \"password\": \"UserPassword123!\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/v1/auth/login" }
+            "url": "http://localhost:5000/api/v1/auth/login"
           }
         },
         {
@@ -41,7 +53,7 @@
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/v1/auth/refresh-token" }
+            "url": "http://localhost:5000/api/v1/auth/refresh-token"
           }
         }
       ]
@@ -61,7 +73,7 @@
               "mode": "raw",
               "raw": "{\n  \"title\": \"Generate Analytics PDF\",\n  \"description\": \"Weekly data aggregation job\",\n  \"priority\": \"HIGH\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/v1/tasks" }
+            "url": "http://localhost:5000/api/v1/tasks"
           }
         },
         {
@@ -69,7 +81,7 @@
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
-            "url": { "raw": "http://localhost:5000/api/v1/tasks?search=analytics&status=PENDING&page=1&limit=10" }
+            "url": "http://localhost:5000/api/v1/tasks?search=analytics&status=PENDING&page=1&limit=10"
           }
         },
         {
@@ -77,7 +89,38 @@
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
-            "url": { "raw": "http://localhost:5000/api/v1/tasks/metrics" }
+            "url": "http://localhost:5000/api/v1/tasks/metrics"
+          }
+        },
+        {
+          "name": "Get Task By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "http://localhost:5000/api/v1/tasks/:taskId"
+          }
+        },
+        {
+          "name": "Update Task Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"description\": \"Updated Description\",\n  \"priority\": \"URGENT\"\n}"
+            },
+            "url": "http://localhost:5000/api/v1/tasks/:taskId"
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "http://localhost:5000/api/v1/tasks/:taskId"
           }
         },
         {
@@ -85,7 +128,15 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
-            "url": { "raw": "http://localhost:5000/api/v1/tasks/:taskId/retry" }
+            "url": "http://localhost:5000/api/v1/tasks/:taskId/retry"
+          }
+        },
+        {
+          "name": "Get Task Audit Logs Timeline",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "http://localhost:5000/api/v1/tasks/:taskId/logs"
           }
         }
       ]
