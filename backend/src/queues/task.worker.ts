@@ -79,7 +79,7 @@ export const initTaskWorker = () => {
     {
       connection: redisClient,
       concurrency: 5,
-      drainDelay: 5,
+      drainDelay: 5000,
       stalledInterval: 30000,
     }
   );
